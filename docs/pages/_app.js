@@ -21,6 +21,8 @@ import loadScript from 'docs/src/modules/utils/loadScript';
 import { ThemeProvider } from 'docs/src/modules/components/ThemeContext';
 import { pathnameToLanguage, getCookie } from 'docs/src/modules/utils/helpers';
 import { ACTION_TYPES, CODE_VARIANTS } from 'docs/src/modules/constants';
+import { Tina, TinaCMS } from 'tinacms';
+import { GitClient } from '@tinacms/git-client';
 
 // Configure JSS
 const jss = create({
@@ -333,12 +335,21 @@ AppWrapper.propTypes = {
 };
 
 export default class MyApp extends App {
+  constructor() {
+    super()
+    this.cms = new TinaCMS()
+    const client = new GitClient('http://localhost:3000/___tina')
+    this.cms.registerApi('git', client)
+  }
+
   render() {
     const { Component, pageProps } = this.props;
 
     return (
       <AppWrapper pageProps={pageProps}>
-        <Component {...pageProps} />
+        <Tina cms={this.cms}>
+          <Component {...pageProps} />
+        </Tina>
       </AppWrapper>
     );
   }

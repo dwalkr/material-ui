@@ -7,6 +7,8 @@ const { addTeardown } = require('../../modules/handleKillSignals');
 const { pathnameToLanguage } = require('./modules/utils/helpers');
 const log = require('../../modules/log');
 const { LANGUAGES_SSR } = require('./modules/constants');
+const cors = require('cors');
+const gitApi = require('@tinacms/api-git');
 
 const nextApp = next({
   dev: process.env.NODE_ENV !== 'production',
@@ -29,6 +31,8 @@ addTeardown({
 async function run() {
   await nextApp.prepare();
   const app = express();
+  app.use(cors());
+  app.use('/___tina', gitApi.router());
   app.get('*', (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     let { pathname } = parsedUrl;
